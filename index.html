@@ -5,25 +5,239 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Developer Portfolio Dashboard</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 0; background-color: #f6f8fa; color: #24292f; }
-    .profile-header { background-color: #24292f; color: #ffffff; padding: 40px 20px; text-align: center; border-bottom: 1px solid #d0d7de; }
-    .header-container { max-width: 800px; margin: 0 auto; }
-    .avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid #57606a; margin-bottom: 16px; }
-    .profile-header h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 600; }
-    .bio { font-size: 16px; color: #8c959f; margin: 0 0 16px 0; line-height: 1.5; }
-    .meta-info { font-size: 13px; color: #8c959f; margin-bottom: 20px; }
-    .btn-profile { display: inline-block; padding: 8px 16px; background-color: #2188ff; color: white; text-decoration: none; font-weight: 500; border-radius: 6px; font-size: 14px; }
-    .portfolio-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-    .section-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid #d0d7de; padding-bottom: 12px; }
-    .section-heading h2 { margin: 0; font-size: 20px; font-weight: 600; }
-    #repo-search { padding: 6px 12px; border: 1px solid #d0d7de; border-radius: 6px; width: 260px; font-size: 14px; outline: none; }
-    .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .repo-card { background: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-    .card-footer { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #57606a; margin-bottom: 12px; }
-    .badge { background-color: #eaeef2; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
-    .badge-check { background-color: #e6ffed; color: #22863a; border: 1px solid #22863a; }
-    .repo-link { font-size: 13px; color: #0969da; text-decoration: none; font-weight: 500; }
-    .loading-text, .error-text, .empty-text { grid-column: 1 / -1; text-align: center; padding: 40px; color: #57606a; font-style: italic; }
+    :root {
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --border: #d0d7de;
+      --text: #24292f;
+      --muted: #57606a;
+      --header: #24292f;
+      --accent: #2188ff;
+      --success: #2da44e;
+      --warning: #d29922;
+      --purple: #8250df;
+      --blue-soft: #ddf4ff;
+      --green-soft: #dafbe1;
+      --orange-soft: #fff8c5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .profile-header {
+      background-color: var(--header);
+      color: #ffffff;
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid #57606a;
+      margin-bottom: 16px;
+      object-fit: cover;
+      background: #fff;
+    }
+
+    .profile-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .bio {
+      font-size: 16px;
+      color: #8c959f;
+      margin: 0 0 16px 0;
+      line-height: 1.5;
+    }
+
+    .meta-info {
+      font-size: 13px;
+      color: #8c959f;
+      margin-bottom: 20px;
+    }
+
+    .btn-profile {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: var(--accent);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .portfolio-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px 40px;
+    }
+
+    .dashboard-section {
+      margin-bottom: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .dashboard-title {
+      margin: 0 0 20px 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f6f8fa 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .summary-label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .summary-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .summary-value.green { color: var(--success); }
+    .summary-value.orange { color: var(--warning); }
+    .summary-value.blue { color: var(--accent); }
+    .summary-value.purple { color: var(--purple); }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #repo-search {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 260px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .repos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .repo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    .repo-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .repo-card p {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0 0 16px;
+      min-height: 42px;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      background-color: #eaeef2;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .badge-check {
+      background-color: var(--green-soft);
+      color: #1a7f37;
+      border: 1px solid rgba(45, 164, 78, 0.2);
+    }
+
+    .repo-link {
+      font-size: 13px;
+      color: #0969da;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .loading-text, .error-text, .empty-text {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .section-heading {
+        align-items: flex-start;
+      }
+
+      #repo-search {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -40,6 +254,28 @@
   </header>
 
   <main class="portfolio-container">
+    <section class="dashboard-section">
+      <h2 class="dashboard-title">📊 Live GitHub Dashboard</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-label">Total Repos</span>
+          <div id="total-repos" class="summary-value blue">0</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Verified Projects</span>
+          <div id="verified-projects" class="summary-value green">0</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Learning / Sandbox</span>
+          <div id="learning-projects" class="summary-value orange">0</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Portfolio / Apps</span>
+          <div id="portfolio-projects" class="summary-value purple">0</div>
+        </div>
+      </div>
+    </section>
+
     <div class="section-heading">
       <h2>📂 Verified Repositories</h2>
       <input type="text" id="repo-search" placeholder="Filter verified projects...">
@@ -50,11 +286,9 @@
   </main>
 
   <script>
-    // ⚠️ ENTER YOUR PERSONAL GITHUB USERNAME HERE
-    const GITHUB_USERNAME = "rkmconsultancey-ai"; 
-
-    // Securely prompt and store token in current browser tab session memory
+    const GITHUB_USERNAME = "rkmconsultancey-ai";
     let GITHUB_TOKEN = sessionStorage.getItem("gh_token");
+
     if (!GITHUB_TOKEN) {
       GITHUB_TOKEN = prompt("Enter your GitHub Personal Access Token to bypass rate-limiting (optional):");
       if (GITHUB_TOKEN) sessionStorage.setItem("gh_token", GITHUB_TOKEN.trim());
@@ -66,35 +300,49 @@
     });
 
     function getFetchOptions() {
-      const headers = {};
+      const headers = { Accept: "application/vnd.github+json" };
       if (GITHUB_TOKEN) headers["Authorization"] = `token ${GITHUB_TOKEN}`;
       return { headers };
     }
 
     async function fetchProfile() {
       try {
-        const res = await fetch(`https://github.com{GITHUB_USERNAME}`, getFetchOptions());
+        const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, getFetchOptions());
         const data = await res.json();
+
+        if (!data || data.message) {
+          throw new Error(data.message || "Profile request failed");
+        }
+
         document.getElementById("avatar").src = data.avatar_url;
         document.getElementById("name").textContent = data.name || data.login;
         document.getElementById("bio").textContent = data.bio || "No biography details available.";
         document.getElementById("location").textContent = `📍 ${data.location || 'Remote'}`;
         document.getElementById("followers").textContent = `👥 ${data.followers} Followers`;
         document.getElementById("github-link").href = data.html_url;
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     let allRepos = [];
+
     async function fetchRepos() {
       const grid = document.getElementById("repos-grid");
       try {
-        const res = await fetch(`https://github.com{GITHUB_USERNAME}/repos?sort=updated&per_page=30`, getFetchOptions());
+        const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`, getFetchOptions());
         const rawRepos = await res.json();
+
+        if (!Array.isArray(rawRepos)) {
+          throw new Error(rawRepos.message || "Repository request failed");
+        }
+
         allRepos = [];
 
         for (const repo of rawRepos) {
-          if (repo.fork) continue; 
-          const hasLicense = repo.license !== null;
+          if (repo.fork) continue;
+
+          const hasLicense = !!repo.license;
           const hasReadme = repo.has_readme !== false;
           const hasGitIgnore = await verifyGitignoreFile(repo.name);
 
@@ -102,20 +350,50 @@
             allRepos.push(repo);
           }
         }
+
+        updateDashboardMetrics(rawRepos, allRepos);
         renderRepos(allRepos);
-      } catch (err) { grid.innerHTML = '<div class="error-text">Failed to filter active project indexes.</div>'; }
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<div class="error-text">Failed to filter active project indexes.</div>';
+      }
     }
 
     async function verifyGitignoreFile(name) {
       try {
-        const check = await fetch(`https://github.com{GITHUB_USERNAME}/${name}/contents/.gitignore`, getFetchOptions());
+        const check = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${name}/contents/.gitignore`, getFetchOptions());
         return check.status === 200;
-      } catch (e) { return false; }
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function updateDashboardMetrics(rawRepos, verifiedRepos) {
+      const totalRepos = rawRepos.length || 0;
+      const verifiedCount = verifiedRepos.length || 0;
+      const learningCount = rawRepos.filter(repo => {
+        const name = (repo.name || "").toLowerCase();
+        const desc = (repo.description || "").toLowerCase();
+        const patterns = ["hello", "node", "tutorial", "learn", "practice", "sandbox", "demo"];
+        return patterns.some(p => name.includes(p) || desc.includes(p));
+      }).length;
+
+      const portfolioCount = rawRepos.filter(repo => {
+        const name = (repo.name || "").toLowerCase();
+        const desc = (repo.description || "").toLowerCase();
+        return name.includes("portfolio") || name.includes("gitfolio") || desc.includes("portfolio");
+      }).length;
+
+      document.getElementById("total-repos").textContent = totalRepos;
+      document.getElementById("verified-projects").textContent = verifiedCount;
+      document.getElementById("learning-projects").textContent = learningCount;
+      document.getElementById("portfolio-projects").textContent = portfolioCount;
     }
 
     function renderRepos(repos) {
       const grid = document.getElementById("repos-grid");
       grid.innerHTML = repos.length ? "" : '<div class="empty-text">No repos found matching README, LICENSE, and .gitignore.</div>';
+
       repos.forEach(repo => {
         const card = document.createElement("div");
         card.className = "repo-card";
@@ -124,7 +402,7 @@
           <p>${repo.description || 'No context details provided.'}</p>
           <div class="card-footer">
             <span class="badge">${repo.language || 'Data Stream'}</span>
-            <span class="badge badge-check">⚖️ ${repo.license.spdx_id}</span>
+            <span class="badge badge-check">⚖️ ${repo.license ? repo.license.spdx_id : 'N/A'}</span>
             <span class="badge badge-check">📝 README</span>
             <span class="badge badge-check">🔒 .gitignore</span>
           </div>
@@ -134,9 +412,13 @@
       });
     }
 
-    document.getElementById("repo-search").addEventListener("input", function(e) {
+    document.getElementById("repo-search").addEventListener("input", function (e) {
       const val = e.target.value.toLowerCase();
-      renderRepos(allRepos.filter(r => r.name.toLowerCase().includes(val) || (r.language || "").toLowerCase().includes(val)));
+      renderRepos(allRepos.filter(repo => {
+        const name = (repo.name || "").toLowerCase();
+        const lang = (repo.language || "").toLowerCase();
+        return name.includes(val) || lang.includes(val);
+      }));
     });
   </script>
 </body>
